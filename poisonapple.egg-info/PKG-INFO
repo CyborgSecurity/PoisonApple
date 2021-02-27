@@ -1,0 +1,29 @@
+Metadata-Version: 2.1
+Name: poisonapple
+Version: 0.1.0
+Summary: Command-line tool to perform various persistence mechanism techniques on macOS.
+Home-page: https://github.com/CyborgSecurity/PoisonApple
+Author: Austin Jackson
+Author-email: austin@cyborgsecurity.com
+License: MIT
+Description: # PoisonApple
+        
+        <img src="poisonapple.png" align="right">
+        
+        Command-line tool to perform various persistence mechanism techniques on macOS.
+        
+        ## Install
+        
+        Do it up:
+        ```
+        $ pip install poisonapple --user
+        ```
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Security
+Description-Content-Type: text/markdown

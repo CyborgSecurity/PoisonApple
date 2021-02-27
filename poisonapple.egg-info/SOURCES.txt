@@ -1,0 +1,10 @@
+README.md
+setup.py
+poisonapple/__init__.py
+poisonapple/cli.py
+poisonapple.egg-info/PKG-INFO
+poisonapple.egg-info/SOURCES.txt
+poisonapple.egg-info/dependency_links.txt
+poisonapple.egg-info/entry_points.txt
+poisonapple.egg-info/requires.txt
+poisonapple.egg-info/top_level.txt
