@@ -1,3 +1,0 @@
-[console_scripts]
-poisonapple = poisonapple.cli:main
-
