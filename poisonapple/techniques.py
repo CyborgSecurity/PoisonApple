@@ -9,6 +9,8 @@ from poisonapple.util import write_plist
 class Technique:
     def __init__(self, technique, root_required=False):
         self.technique = technique
+        self.name = name
+        self.command = command
         self.root_required = root_required
         self.success = False
         self.error_message = str()
@@ -41,9 +43,7 @@ class Technique:
 
 class LaunchAgent(Technique):
     def __init__(self, name, command):
-        super().__init__('LaunchAgent', root_required=True)
-        self.name = name
-        self.command = command
+        super().__init__('LaunchAgent', name, command, root_required=True)
 
     @Technique.execute
     def run(self):
@@ -52,9 +52,7 @@ class LaunchAgent(Technique):
 
 class LaunchDaemon(Technique):
     def __init__(self, name, command):
-        super().__init__('LaunchDaemon', root_required=True)
-        self.name = name
-        self.command = command
+        super().__init__('LaunchDaemon', name, command, root_required=True)
 
     @Technique.execute
     def run(self):
