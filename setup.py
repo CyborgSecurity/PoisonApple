@@ -25,6 +25,7 @@ setup(
     },
     install_requires=[
         'crayons',
+        'launchd',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
