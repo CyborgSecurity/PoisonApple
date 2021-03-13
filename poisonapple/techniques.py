@@ -7,7 +7,7 @@ from poisonapple.util import write_plist
 
 
 class Technique:
-    def __init__(self, technique, root_required=False):
+    def __init__(self, technique, name, command, root_required=False):
         self.technique = technique
         self.name = name
         self.command = command

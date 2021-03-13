@@ -9,7 +9,13 @@ with open(os.path.join(directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='poisonapple',
-    packages=['poisonapple'],
+    packages=[
+        'poisonapple',
+        'poisonapple.bin',
+    ],
+    package_data={
+        'poisonapple.bin': ['*.bin']
+    },
     version='0.1.1',
     description='Command-line tool to perform various persistence mechanism techniques on macOS.',
     long_description=long_description,

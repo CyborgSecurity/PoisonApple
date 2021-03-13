@@ -3,6 +3,7 @@
 import argparse
 
 from poisonapple.techniques import technique_list
+from poisonapple.util import get_popup_command
 
 BANNER = '''\
       ,       _______       __
@@ -43,6 +44,11 @@ def get_parser():
         default=str(), type=str,
         help='command(s) to execute for persistence'
     )
+    parser.add_argument(
+        '-p', '--popup',
+        action='store_true',
+        help='create a popupbox for testing persistence (use in lieu of a command)'
+    )
     return parser
 
 
@@ -67,7 +73,10 @@ def main():
         return
 
     for technique in technique_list:
-        if technique.__name__.lower() in args['technique'].strip().lower():
+        technique_name = technique.__name__
+        if technique_name.lower() in args['technique'].strip().lower():
+            if not command:
+                command = get_popup_command(technique_name)
             t = technique(name, command)
             t.run()
 
