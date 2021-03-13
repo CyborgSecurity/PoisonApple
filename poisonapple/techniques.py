@@ -1,9 +1,8 @@
 """poisonapple.techniques"""
 
 import os
-import crayons
 
-from poisonapple.util import write_plist
+from poisonapple.util import print_error, write_plist
 
 
 class Technique:
@@ -17,14 +16,10 @@ class Technique:
 
     def display_result(self):
         if self.success:
-            print(crayons.green(
-                f'[+] Success! The {self.technique} persistence mechanism was applied.'
-            ))
+            print_error('success', text=self.technique)
         else:
-            print(crayons.red(
-                f'[-] Error! The {self.technique} persistence mechansim failed.\n' + \
-                f'[-] {self.error_message}'
-            ))
+            print_error('failure', text=self.technique)
+            print_error('python_error', text=self.error_message)
 
     @staticmethod
     def execute(func):

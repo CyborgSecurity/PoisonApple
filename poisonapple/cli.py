@@ -1,9 +1,10 @@
 """poisonapple.cli"""
 
 import argparse
+import crayons
 
 from poisonapple.techniques import technique_list
-from poisonapple.util import get_popup_command
+from poisonapple.util import get_popup_command, print_error
 
 BANNER = '''\
       ,       _______       __
@@ -16,7 +17,7 @@ BANNER = '''\
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.1.1
+                   `--- ---' v0.1.2
 '''
 
 
@@ -68,14 +69,18 @@ def main():
     name = args['name']
     command = args['command'].split()
 
-    if not (name or command or args['technique']):
-        print('Missing required option, see --help for more info...')
+    if not (name and args['technique']):
+        print_error('missing_option')
+        return
+
+    if not (command or args['popup']):
+        print_error('missing_command')
         return
 
     for technique in technique_list:
         technique_name = technique.__name__
         if technique_name.lower() in args['technique'].strip().lower():
-            if not command:
+            if args['popup']:
                 command = get_popup_command(technique_name)
             t = technique(name, command)
             t.run()
