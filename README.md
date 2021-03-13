@@ -10,3 +10,8 @@ Do it up:
 ```
 $ pip install poisonapple --user
 ```
+
+## Usage
+
+* PoisonApple video
+* Threat Hunt Deep Dives macOS persistence
