@@ -2,6 +2,7 @@
 
 import os
 
+from crontab import CronTab
 from poisonapple.util import print_error, write_plist
 
 
@@ -54,7 +55,20 @@ class LaunchDaemon(Technique):
         write_plist(self.name, self.command, scope=3)
 
 
+class Cron(Technique):
+    def __init__(self, name, command):
+        super().__init__('Cron', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        cron = CronTab(user=os.getlogin())
+        job = cron.new(command=command)
+        job.minute.every(1)
+        cron.write()
+
+
 technique_list = [
+    Cron,
     LaunchAgent,
     LaunchDaemon,
 ]

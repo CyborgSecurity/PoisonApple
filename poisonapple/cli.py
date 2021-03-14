@@ -67,22 +67,24 @@ def main():
         return
 
     name = args['name']
-    command = args['command'].split()
+    technique = args['technique']
+    command = args['command']
+    popup = args['popup']
 
-    if not (name and args['technique']):
+    if not (name and technique):
         print_error('missing_option')
         return
 
-    if not (command or args['popup']):
+    if not (command or popup):
         print_error('missing_command')
         return
 
-    for technique in technique_list:
-        technique_name = technique.__name__
-        if technique_name.lower() in args['technique'].strip().lower():
-            if args['popup']:
+    for technique_class in technique_list:
+        technique_name = technique_class.__name__
+        if technique_name.lower() in technique.strip().lower():
+            if popup:
                 command = get_popup_command(technique_name)
-            t = technique(name, command)
+            t = technique_class(name, command)
             t.run()
 
 

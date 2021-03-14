@@ -32,6 +32,7 @@ setup(
     install_requires=[
         'crayons',
         'launchd',
+        'python-crontab',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
