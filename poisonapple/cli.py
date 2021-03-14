@@ -71,7 +71,6 @@ def main():
         print(seperator)
         return
 
-
     name      = args['name']
     popup     = args['popup']
     remove    = args['remove']
