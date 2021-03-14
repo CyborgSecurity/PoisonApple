@@ -46,15 +46,16 @@ def write_plist(label, program_arguments, scope):
         KeepAlive=True,
     )
     job = launchd.LaunchdJob(label)
-    fname = launchd.plist.write(label, plist, scope=scope)
+    fname = launchd.plist.write(label, plist, scope)
     launchd.load(fname)
 
 
-def uninstall_plist(label, scopes):
-    if launchd.LaunchdJob(label).exists():
-        fname = launchd.plist.discover_filename(label, scopes=scopes)
-        launchd.unload(fname)
-        os.unlink(fname)
+def uninstall_plist(label, scope):
+    fname = launchd.plist.discover_filename(label, scope)
+    if not fname:
+        raise Exception(f'{label}.plist not found.')
+    launchd.unload(fname)
+    os.unlink(fname)
 
 
 class LaunchAgent(Technique):
@@ -68,7 +69,6 @@ class LaunchAgent(Technique):
     @Technique.execute
     def remove(self):
         uninstall_plist(self.name, 2)
-        # os.remove(f'/Library/LaunchAgents/{self.name}.plist')
 
 
 class LaunchDaemon(Technique):
@@ -82,7 +82,6 @@ class LaunchDaemon(Technique):
     @Technique.execute
     def remove(self):
         uninstall_plist(self.name, 3)
-        # os.remove(f'/Library/LaunchDaemons/{self.name}.plist')
 
 
 class Cron(Technique):
