@@ -71,17 +71,18 @@ def main():
         print(seperator)
         return
 
-    name = args['name']
+
+    name      = args['name']
+    popup     = args['popup']
+    remove    = args['remove']
+    command   = args['command']
     technique = args['technique']
-    command = args['command']
-    popup = args['popup']
-    remove = args['remove']
 
     if not (name and technique):
         print_error('missing_option')
         return
 
-    if not (command or popup):
+    if not (command or popup) and not remove:
         print_error('missing_command')
         return
 
