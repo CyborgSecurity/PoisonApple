@@ -50,6 +50,11 @@ def get_parser():
         action='store_true',
         help='create a popupbox for testing persistence (use in lieu of a command)'
     )
+    parser.add_argument(
+        '-r', '--remove',
+        action='store_true',
+        help='remove persistence mechanism'
+    )
     return parser
 
 
@@ -70,6 +75,7 @@ def main():
     technique = args['technique']
     command = args['command']
     popup = args['popup']
+    remove = args['remove']
 
     if not (name and technique):
         print_error('missing_option')
@@ -85,7 +91,10 @@ def main():
             if popup:
                 command = get_popup_command(technique_name)
             t = technique_class(name, command)
-            t.run()
+            if remove:
+                t.remove()
+            else:
+                t.run()
 
 
 if __name__ == '__main__':

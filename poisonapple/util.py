@@ -5,26 +5,29 @@ import crayons
 import launchd
 
 STATUS_MESSAGES = {
-    'failure':          '[!] Failure! The persistence mechansim failed...',
-    'python_error':     '[-] Error! Traceback...',
+    'failure':          '[!] Failure! The persistence mechansim action failed',
+    'python_error':     '[-] Error! Traceback',
     'missing_command':  '[-] Error! Need to specifiy either --command <COMMAND> OR --popup',
     'missing_option':   '[-] Error! Missing required option, see --help for more info...',
-    'success':          '[+] Success! The persistence mechanism was applied...',
+    'success':          '[+] Success! The persistence mechanism action was successful',
 }
 
 
 def print_error(name, text=str()):
-    message = ' '.join([STATUS_MESSAGES[name], text]).strip()
+    message = STATUS_MESSAGES[name]
+    if text:
+        message += f': {text}'
     if message.startswith('[+]'):
-        print(crayons.green(message))
+        message_with_color = crayons.green(message)
     elif message.startswith('[-]'):
-        print(crayons.red(message))
+        message_with_color = crayons.red(message)
     elif message.startswith('[!]'):
-        print(crayons.magenta(message))
+        message_with_color = crayons.magenta(message)
     elif message.startswith('[~]'):
-        print(crayons.yellow(message))
+        message_with_color = crayons.yellow(message)
     else:
-        print(crayons.white(message))
+        message_with_color = crayons.white(message)
+    print(message_with_color)
 
 
 def write_plist(label, program_arguments, scope):
