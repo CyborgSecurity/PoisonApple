@@ -1,9 +1,10 @@
 """poisonapple.techniques"""
 
 import os
+import launchd
 
 from crontab import CronTab
-from poisonapple.util import print_error, write_plist
+from poisonapple.util import print_error
 
 
 class Technique:
@@ -37,17 +38,37 @@ class Technique:
         return wrapper
 
 
+def write_plist(label, program_arguments, scope):
+    plist = dict(
+        Label=label,
+        ProgramArguments=program_arguments.split(),
+        RunAtLoad=True,
+        KeepAlive=True,
+    )
+    job = launchd.LaunchdJob(label)
+    fname = launchd.plist.write(label, plist, scope=scope)
+    launchd.load(fname)
+
+
+def uninstall_plist(label, scopes):
+    if launchd.LaunchdJob(label).exists():
+        fname = launchd.plist.discover_filename(label, scopes=scopes)
+        launchd.unload(fname)
+        os.unlink(fname)
+
+
 class LaunchAgent(Technique):
     def __init__(self, name, command):
         super().__init__('LaunchAgent', name, command, root_required=True)
 
     @Technique.execute
     def run(self):
-        write_plist(self.name, self.command, scope=2)
+        write_plist(self.name, self.command, 2)
 
     @Technique.execute
     def remove(self):
-        os.remove(f'/Library/LaunchAgents/{self.name}.plist')
+        uninstall_plist(self.name, 2)
+        # os.remove(f'/Library/LaunchAgents/{self.name}.plist')
 
 
 class LaunchDaemon(Technique):
@@ -56,11 +77,12 @@ class LaunchDaemon(Technique):
 
     @Technique.execute
     def run(self):
-        write_plist(self.name, self.command, scope=3)
+        write_plist(self.name, self.command, 3)
 
     @Technique.execute
     def remove(self):
-        os.remove(f'/Library/LaunchDaemons/{self.name}.plist')
+        uninstall_plist(self.name, 3)
+        # os.remove(f'/Library/LaunchDaemons/{self.name}.plist')
 
 
 class Cron(Technique):
