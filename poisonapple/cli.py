@@ -48,7 +48,7 @@ def get_parser():
     parser.add_argument(
         '-p', '--popup',
         action='store_true',
-        help='create a popupbox for testing persistence (use in lieu of a command)'
+        help='create a popup box for testing persistence (use in lieu of a command)'
     )
     parser.add_argument(
         '-r', '--remove',
