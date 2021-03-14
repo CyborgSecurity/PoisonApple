@@ -1,10 +1,9 @@
 """poisonapple.techniques"""
 
 import os
-import launchd
 
 from crontab import CronTab
-from poisonapple.util import print_error
+from poisonapple.util import print_error, write_plist, uninstall_plist
 
 
 class Technique:
@@ -36,26 +35,6 @@ class Technique:
                     self.error_message = str(e)
             self.display_result()
         return wrapper
-
-
-def write_plist(label, program_arguments, scope):
-    plist = dict(
-        Label=label,
-        ProgramArguments=program_arguments.split(),
-        RunAtLoad=True,
-        KeepAlive=True,
-    )
-    job = launchd.LaunchdJob(label)
-    fname = launchd.plist.write(label, plist, scope)
-    launchd.load(fname)
-
-
-def uninstall_plist(label, scope):
-    fname = launchd.plist.discover_filename(label, scope)
-    if not fname:
-        raise Exception(f'{label}.plist not found.')
-    launchd.unload(fname)
-    os.unlink(fname)
 
 
 class LaunchAgent(Technique):

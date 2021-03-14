@@ -2,6 +2,7 @@
 
 import os
 import crayons
+import launchd
 
 STATUS_MESSAGES = {
     'failure':          '[!] Failure! The persistence mechansim action failed',
@@ -27,6 +28,26 @@ def print_error(name, text=str()):
     else:
         message_with_color = crayons.white(message)
     print(message_with_color)
+
+
+def write_plist(label, program_arguments, scope):
+    plist = dict(
+        Label=label,
+        ProgramArguments=program_arguments.split(),
+        RunAtLoad=True,
+        KeepAlive=True,
+    )
+    job = launchd.LaunchdJob(label)
+    fname = launchd.plist.write(label, plist, scope)
+    launchd.load(fname)
+
+
+def uninstall_plist(label, scope):
+    fname = launchd.plist.discover_filename(label, scope)
+    if not fname:
+        raise Exception(f'{label}.plist not found.')
+    launchd.unload(fname)
+    os.unlink(fname)
 
 
 def get_popup_command(technique_name):
