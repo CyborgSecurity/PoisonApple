@@ -12,22 +12,21 @@ STATUS_MESSAGES = {
     'success':          '[+] Success! The persistence mechanism action was successful',
 }
 
+STATUS_COLORS = {
+    '[+]': crayons.green,
+    '[-]': crayons.red,
+    '[!]': crayons.magenta,
+    '[~]': crayons.yellow,
+}
+
 
 def print_error(name, text=str()):
     message = STATUS_MESSAGES[name]
     if text:
         message += f': {text}'
-    if message.startswith('[+]'):
-        message_with_color = crayons.green(message)
-    elif message.startswith('[-]'):
-        message_with_color = crayons.red(message)
-    elif message.startswith('[!]'):
-        message_with_color = crayons.magenta(message)
-    elif message.startswith('[~]'):
-        message_with_color = crayons.yellow(message)
-    else:
-        message_with_color = crayons.white(message)
-    print(message_with_color)
+    for log_type, color in STATUS_COLORS.items():
+        if message.startswith(log_type):
+            print(color(message))
 
 
 def write_plist(label, program_arguments, scope):
