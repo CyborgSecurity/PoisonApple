@@ -4,7 +4,7 @@ import argparse
 import crayons
 
 from poisonapple.techniques import technique_list
-from poisonapple.util import get_popup_command, print_error
+from poisonapple.util import get_trigger_command, print_error
 
 BANNER = '''\
       ,       _______       __
@@ -46,11 +46,6 @@ def get_parser():
         help='command(s) to execute for persistence'
     )
     parser.add_argument(
-        '-p', '--popup',
-        action='store_true',
-        help='create a popup box for testing persistence (use in lieu of a command)'
-    )
-    parser.add_argument(
         '-r', '--remove',
         action='store_true',
         help='remove persistence mechanism'
@@ -72,24 +67,18 @@ def main():
         return
 
     name      = args['name']
-    popup     = args['popup']
     remove    = args['remove']
     command   = args['command']
     technique = args['technique']
 
     if not (name and technique):
-        print_error('missing_option')
-        return
-
-    if not (command or popup) and not remove:
-        print_error('missing_command')
-        return
+        print_error('missing_option', stop=True)
 
     for technique_class in technique_list:
         technique_name = technique_class.__name__
         if technique_name.lower() in technique.strip().lower():
-            if popup:
-                command = get_popup_command(technique_name)
+            if not command:
+                command = get_trigger_command(technique_name)
             t = technique_class(name, command)
             if remove:
                 t.remove()

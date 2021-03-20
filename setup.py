@@ -11,10 +11,10 @@ setup(
     name='poisonapple',
     packages=[
         'poisonapple',
-        'poisonapple.bin',
+        'poisonapple.trigger',
     ],
     package_data={
-        'poisonapple.bin': ['*.bin']
+        'poisonapple.trigger': ['*.sh']
     },
     version='0.1.2',
     description='Command-line tool to perform various persistence mechanism techniques on macOS.',

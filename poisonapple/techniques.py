@@ -121,7 +121,35 @@ class LogoutHook(Technique):
         os.system('defaults delete com.apple.loginwindow LogoutHook')
 
 
+class AtJob(Technique):
+    def __init__(self, name, command):
+        super().__init__('AtJob', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+        os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
+        os.system('launchctl load -w /System/Library/LaunchDaemons/com.apple.atrun.plist')
+        # recurisve at command here
+
+    @Technique.execute
+    def remove(self):
+        pass
+
+
+"""
+# https://github.com/python/cpython/blob/master/Lib/plistlib.py
+# might be depreciated
+class StartupItems(Technique):
+    def __init__(self, name, command):
+        super().__init__('LogoutHook', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+"""
+
+
 technique_list = [
+    AtJob,
     Cron,
     LaunchAgent,
     LaunchDaemon,

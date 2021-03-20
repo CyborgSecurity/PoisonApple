@@ -1,6 +1,7 @@
 """poisonapple.util"""
 
 import os
+import sys
 import crayons
 import launchd
 
@@ -20,13 +21,15 @@ STATUS_COLORS = {
 }
 
 
-def print_error(name, text=str()):
+def print_error(name, text=str(), stop=False):
     message = STATUS_MESSAGES[name]
     if text:
         message += f': {text}'
     for log_type, color in STATUS_COLORS.items():
         if message.startswith(log_type):
             print(color(message))
+    if stop:
+        sys.exit(1)
 
 
 def write_plist(label, program_arguments, scope):
@@ -49,7 +52,7 @@ def uninstall_plist(label, scope):
     os.unlink(fname)
 
 
-def get_popup_command(technique_name):
+def get_trigger_command(technique_name):
     directory = os.path.abspath(os.path.dirname(__file__))
-    popup = os.path.join(directory, 'bin/popup.bin')
-    return f'{popup} {technique_name}'
+    trigger = os.path.join(directory, 'trigger/poisonapple.sh')
+    return f'{trigger} {technique_name}'
