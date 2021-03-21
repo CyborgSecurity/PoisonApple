@@ -3,7 +3,7 @@
 import os
 
 from crontab import CronTab
-from poisonapple.util import print_error, write_plist, uninstall_plist
+from poisonapple.util import print_error, write_plist, uninstall_plist, custom_plist
 
 
 class Technique:
@@ -152,7 +152,22 @@ class AtJob(Technique):
 
     @Technique.execute
     def remove(self):
-        pass
+        os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
+
+
+class Emond(Technique):
+    def __init__(self, name, command):
+        super().__init__('Emond', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+        custom_plist(self.name, self.command, '/etc/emond.d/rules/')
+        os.system(f'touch /private/var/db/emondClients/{self.name}')
+
+    @Technique.execute
+    def remove(self):
+        os.remove(f'/etc/emond.d/rules/{self.name}.plist')
+        os.remove(f'/private/var/db/emondClients/{self.name}')
 
 
 """
@@ -170,6 +185,7 @@ class StartupItems(Technique):
 technique_list = [
     AtJob,
     Cron,
+    Emond,
     LaunchAgent,
     LaunchAgentUser,
     LaunchDaemon,

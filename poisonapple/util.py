@@ -4,6 +4,7 @@ import os
 import sys
 import crayons
 import launchd
+import plistlib
 
 STATUS_MESSAGES = {
     'failure':          '[!] Failure! The persistence mechansim action failed',
@@ -30,6 +31,17 @@ def print_error(name, text=str(), stop=False):
             print(color(message))
     if stop:
         sys.exit(1)
+
+
+def custom_plist(label, program_arguments, path):
+    plist = dict(
+        Label=label,
+        ProgramArguments=program_arguments.split(),
+        RunAtLoad=True,
+        KeepAlive=True,
+    )
+    with open(os.path.join(path, label+'.plist'), 'wb') as f:
+        plistlib.dump(plist, f)
 
 
 def write_plist(label, program_arguments, scope):
