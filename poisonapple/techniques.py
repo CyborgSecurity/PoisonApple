@@ -50,6 +50,23 @@ class LaunchAgent(Technique):
         uninstall_plist(self.name, 2)
 
 
+class LaunchAgentUser(Technique):
+    def __init__(self, name, command):
+        super().__init__('LaunchAgentUser', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        try:
+            os.mkdir(os.path.join(f'/Users/{os.getlogin()}', 'Library/LaunchAgents'))
+        except FileExistsError:
+            pass
+        write_plist(self.name, self.command, 1)
+
+    @Technique.execute
+    def remove(self):
+        uninstall_plist(self.name, 1)
+
+
 class LaunchDaemon(Technique):
     def __init__(self, name, command):
         super().__init__('LaunchDaemon', name, command, root_required=True)
@@ -70,12 +87,13 @@ class Cron(Technique):
     @Technique.execute
     def run(self):
         cron = CronTab(user=os.getlogin())
-        job = cron.new(command=self.command)
+        job = cron.new(command=self.command, comment=self.name)
         job.minute.every(1)
         cron.write()
 
     @Technique.execute
     def remove(self):
+        # remove based on name in /usr/lib/cron/tabs/user
         pass
 
 
@@ -129,6 +147,7 @@ class AtJob(Technique):
     def run(self):
         os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
         os.system('launchctl load -w /System/Library/LaunchDaemons/com.apple.atrun.plist')
+        # os.system('echo foo | at +1 minute')
         # recurisve at command here
 
     @Technique.execute
@@ -152,6 +171,7 @@ technique_list = [
     AtJob,
     Cron,
     LaunchAgent,
+    LaunchAgentUser,
     LaunchDaemon,
     LoginHook,
     LogoutHook,

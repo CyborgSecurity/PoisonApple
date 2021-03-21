@@ -1,7 +1,7 @@
 """poisonapple.cli"""
 
-import argparse
 import crayons
+import argparse
 
 from poisonapple.techniques import technique_list
 from poisonapple.util import get_trigger_command, print_error
@@ -76,7 +76,7 @@ def main():
 
     for technique_class in technique_list:
         technique_name = technique_class.__name__
-        if technique_name.lower() in technique.strip().lower():
+        if technique_name.lower() == technique.strip().lower():
             if not command:
                 command = get_trigger_command(technique_name)
             t = technique_class(name, command)
