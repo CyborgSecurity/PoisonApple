@@ -93,8 +93,41 @@ class Cron(Technique):
 
     @Technique.execute
     def remove(self):
-        # remove based on name in /usr/lib/cron/tabs/user
-        pass
+        cron_path = os.path.join('/usr/lib/cron/tabs/', os.getlogin())
+        lines = list()
+        with open(cron_path) as f:
+            for line in f.readlines():
+                if f'# {self.name}' in line:
+                    continue
+                lines.append(line)
+        with open(cron_path, 'w') as f:
+            for line in lines:
+                f.write(line)
+
+
+class CronRoot(Technique):
+    def __init__(self, name, command):
+        super().__init__('CronRoot', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+        cron = CronTab(user='root')
+        job = cron.new(command=self.command, comment=self.name)
+        job.minute.every(1)
+        cron.write()
+
+    @Technique.execute
+    def remove(self):
+        cron_path = '/usr/lib/cron/tabs/root'
+        lines = list()
+        with open(cron_path) as f:
+            for line in f.readlines():
+                if f'# {self.name}' in line:
+                    continue
+                lines.append(line)
+        with open(cron_path, 'w') as f:
+            for line in lines:
+                f.write(line)
 
 
 class Periodic(Technique):
@@ -147,8 +180,8 @@ class AtJob(Technique):
     def run(self):
         os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
         os.system('launchctl load -w /System/Library/LaunchDaemons/com.apple.atrun.plist')
-        # os.system('echo foo | at +1 minute')
-        # recurisve at command here
+        # TODO: recurisve at command here?
+        os.system(f'{self.command} | at +1 minute')
 
     @Technique.execute
     def remove(self):
@@ -170,21 +203,10 @@ class Emond(Technique):
         os.remove(f'/private/var/db/emondClients/{self.name}')
 
 
-"""
-# https://github.com/python/cpython/blob/master/Lib/plistlib.py
-# might be depreciated
-class StartupItems(Technique):
-    def __init__(self, name, command):
-        super().__init__('LogoutHook', name, command, root_required=True)
-
-    @Technique.execute
-    def run(self):
-"""
-
-
 technique_list = [
     AtJob,
     Cron,
+    CronRoot,
     Emond,
     LaunchAgent,
     LaunchAgentUser,

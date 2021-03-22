@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>poisonapple rule</string>
+		<key>enabled</key>
+		<true/>
+		<key>eventTypes</key>
+		<array>
+			<string>startup</string>
+		</array>
+		<key>actions</key>
+		<array>
+			<dict>
+				<key>command</key>
+				<string>/usr/local/lib/python3.9/site-packages/poisonapple-0.1.2-py3.9.egg/poisonapple/trigger/poisonapple.sh</string>
+				<key>user</key>
+				<string>user</string>
+				<key>arguments</key>
+				<array>
+					<string>Emond</string>
+				</array>
+				<key>type</key>
+				<string>RunCommand</string>
+			</dict>
+		</array>
+	</dict>
+</array>
+</plist>

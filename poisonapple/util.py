@@ -65,6 +65,8 @@ def uninstall_plist(label, scope):
 
 
 def get_trigger_command(technique_name):
-    directory = os.path.abspath(os.path.dirname(__file__))
-    trigger = os.path.join(directory, 'trigger/poisonapple.sh')
+    trigger = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        'auxiliary/poisonapple.sh'
+    )
     return f'{trigger} {technique_name}'
