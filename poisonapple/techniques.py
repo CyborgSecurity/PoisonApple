@@ -186,8 +186,35 @@ class Emond(Technique):
         os.remove(f'/private/var/db/emondClients/{self.name}')
 
 
+class Zshrc(Technique):
+    def __init__(self, name, command):
+        super().__init__('Zshrc', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        os.system(f'echo "{self.command} # {self.name}" >> /Users/{os.getlogin()}/.zshrc')
+
+    @Technique.execute
+    def remove(self):
+        remove_line(f'# {self.name}', f'/Users/{os.getlogin()}/.zshrc')
+
+
+class Bashrc(Technique):
+    def __init__(self, name, command):
+        super().__init__('Bashrc', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        os.system(f'echo "{self.command} # {self.name}" >> /Users/{os.getlogin()}/.bashrc')
+
+    @Technique.execute
+    def remove(self):
+        remove_line(f'# {self.name}', f'/Users/{os.getlogin()}/.bashrc')
+
+
 technique_list = [
     AtJob,
+    Bashrc,
     Cron,
     CronRoot,
     Emond,
@@ -197,4 +224,5 @@ technique_list = [
     LoginHook,
     LogoutHook,
     Periodic,
+    Zshrc,
 ]
