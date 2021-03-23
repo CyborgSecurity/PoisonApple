@@ -3,7 +3,8 @@
 import os
 
 from poisonapple.util import (
-    print_status, write_plist, uninstall_plist, create_cron_job, remove_line
+    print_status, get_full_path, write_plist, uninstall_plist,
+    create_cron_job, remove_line
 )
 
 
@@ -171,14 +172,8 @@ class Emond(Technique):
 
     @Technique.execute
     def run(self):
-        plist_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)),
-            'auxiliary/poisonapple.plist'
-        )
-        trigger_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)),
-            'auxiliary/poisonapple.sh'
-        )
+        plist_path = get_full_path('auxiliary/poisonapple.plist')
+        trigger_path = get_full_path('auxiliary/poisonapple.sh')
         with open(plist_path) as f:
             plist_data = f.read()
         with open(f'/etc/emond.d/rules/{self.name}.plist', 'w') as f:

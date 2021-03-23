@@ -34,6 +34,13 @@ def print_status(name, text=str(), stop=False):
         sys.exit(1)
 
 
+def get_full_path(relative_path):
+    return os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        relative_path
+    )
+
+
 def write_plist(label, program_arguments, scope):
     plist = dict(
         Label=label,
@@ -55,11 +62,7 @@ def uninstall_plist(label, scope):
 
 
 def get_trigger_command(technique_name):
-    trigger = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        'auxiliary/poisonapple.sh'
-    )
-    return f'{trigger} {technique_name}'
+    return f'{get_full_path("auxiliary/poisonapple.sh")} {technique_name}'
 
 
 def create_cron_job(user, command, comment):
