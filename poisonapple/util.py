@@ -4,6 +4,7 @@ import os
 import sys
 import crayons
 import launchd
+import plistlib
 
 from crontab import CronTab
 
@@ -41,7 +42,17 @@ def get_full_path(relative_path):
     )
 
 
-def write_plist(label, program_arguments, scope):
+def get_plist(file_path):
+    with open(file_path, 'rb') as f:
+        return plistlib.load(f)
+
+
+def write_plist(file_path, data):
+    with open(file_path, 'wb') as f:
+        plistlib.dump(data, f)
+
+
+def plist_launch_write(label, program_arguments, scope):
     plist = dict(
         Label=label,
         ProgramArguments=program_arguments.split(),
@@ -53,7 +64,7 @@ def write_plist(label, program_arguments, scope):
     launchd.load(fname)
 
 
-def uninstall_plist(label, scope):
+def plist_launch_uninstall(label, scope):
     fname = launchd.plist.discover_filename(label, scope)
     if not fname:
         raise Exception(f'{label}.plist not found.')

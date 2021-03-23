@@ -3,8 +3,8 @@
 import os
 
 from poisonapple.util import (
-    print_status, get_full_path, write_plist, uninstall_plist,
-    create_cron_job, remove_line
+    print_status, get_full_path, create_cron_job, remove_line,
+    get_plist, write_plist, plist_launch_write, plist_launch_uninstall,
 )
 
 
@@ -45,11 +45,11 @@ class LaunchAgent(Technique):
 
     @Technique.execute
     def run(self):
-        write_plist(self.name, self.command, 2)
+        plist_launch_write(self.name, self.command, 2)
 
     @Technique.execute
     def remove(self):
-        uninstall_plist(self.name, 2)
+        plist_launch_uninstall(self.name, 2)
 
 
 class LaunchAgentUser(Technique):
@@ -62,11 +62,11 @@ class LaunchAgentUser(Technique):
             os.mkdir(os.path.join(f'/Users/{os.getlogin()}', 'Library/LaunchAgents'))
         except FileExistsError:
             pass
-        write_plist(self.name, self.command, 1)
+        plist_launch_write(self.name, self.command, 1)
 
     @Technique.execute
     def remove(self):
-        uninstall_plist(self.name, 1)
+        plist_launch_uninstall(self.name, 1)
 
 
 class LaunchDaemon(Technique):
@@ -75,11 +75,11 @@ class LaunchDaemon(Technique):
 
     @Technique.execute
     def run(self):
-        write_plist(self.name, self.command, 3)
+        plist_launch_write(self.name, self.command, 3)
 
     @Technique.execute
     def remove(self):
-        uninstall_plist(self.name, 3)
+        plist_launch_uninstall(self.name, 3)
 
 
 class Cron(Technique):
@@ -238,6 +238,34 @@ class Bashrc(Technique):
         remove_line(f'# {self.name}', f'/Users/{os.getlogin()}/.bashrc')
 
 
+class Reopen(Technique):
+    def __init__(self, name, command):
+        super().__init__('Reopen', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        reopen_path = f'/Users/{os.getlogin()}/Library/Preferences/ByHost/'
+        plist_paths = [os.path.join(reopen_path, f) for f in os.listdir(reopen_path) if f.startswith('com.apple.loginwindow')]
+        if not plist_paths:
+            raise Exception('Reopen plist file not found!')
+
+        for path in plist_paths:
+            plist_data = get_plist(path)
+            plist_data['TALAppsToRelaunchAtLogin'].append(
+                {
+                    'Hide': False,
+                    'BundleID': self.name,
+                    'Path': self.command,
+                    'BackgroundState': 2
+                }
+            )
+            write_plist(path, plist_data)
+
+    @Technique.execute
+    def remove(self):
+        pass
+
+
 technique_list = [
     AtJob,
     Bashrc,
@@ -252,5 +280,6 @@ technique_list = [
     LogoutHook,
     LogoutHookUser,
     Periodic,
+    Reopen,
     Zshrc,
 ]
