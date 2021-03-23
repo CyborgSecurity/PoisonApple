@@ -4,7 +4,7 @@ import crayons
 import argparse
 
 from poisonapple.techniques import technique_list
-from poisonapple.util import get_trigger_command, print_error
+from poisonapple.util import get_trigger_command, print_status
 
 BANNER = '''\
       ,       _______       __
@@ -72,7 +72,7 @@ def main():
     technique = args['technique']
 
     if not (name and technique):
-        print_error('missing_option', stop=True)
+        print_status('missing_option', stop=True)
 
     for technique_class in technique_list:
         technique_name = technique_class.__name__

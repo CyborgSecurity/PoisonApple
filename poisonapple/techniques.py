@@ -2,8 +2,9 @@
 
 import os
 
-from crontab import CronTab
-from poisonapple.util import print_error, write_plist, uninstall_plist, custom_plist
+from poisonapple.util import (
+    print_status, write_plist, uninstall_plist, create_cron_job, remove_line
+)
 
 
 class Technique:
@@ -17,10 +18,10 @@ class Technique:
 
     def display_result(self):
         if self.success:
-            print_error('success', text=self.technique)
+            print_status('success', text=self.technique)
         else:
-            print_error('failure', text=self.technique)
-            print_error('python_error', text=self.error_message)
+            print_status('failure', text=self.technique)
+            print_status('python_error', text=self.error_message)
 
     @staticmethod
     def execute(func):
@@ -86,23 +87,11 @@ class Cron(Technique):
 
     @Technique.execute
     def run(self):
-        cron = CronTab(user=os.getlogin())
-        job = cron.new(command=self.command, comment=self.name)
-        job.minute.every(1)
-        cron.write()
+        create_cron_job(os.getlogin(), self.command, self.name)
 
     @Technique.execute
     def remove(self):
-        cron_path = os.path.join('/usr/lib/cron/tabs/', os.getlogin())
-        lines = list()
-        with open(cron_path) as f:
-            for line in f.readlines():
-                if f'# {self.name}' in line:
-                    continue
-                lines.append(line)
-        with open(cron_path, 'w') as f:
-            for line in lines:
-                f.write(line)
+        remove_line(f'# {self.name}', os.path.join('/usr/lib/cron/tabs/', os.getlogin()))
 
 
 class CronRoot(Technique):
@@ -111,23 +100,11 @@ class CronRoot(Technique):
 
     @Technique.execute
     def run(self):
-        cron = CronTab(user='root')
-        job = cron.new(command=self.command, comment=self.name)
-        job.minute.every(1)
-        cron.write()
+        create_cron_job('root', self.command, self.name)
 
     @Technique.execute
     def remove(self):
-        cron_path = '/usr/lib/cron/tabs/root'
-        lines = list()
-        with open(cron_path) as f:
-            for line in f.readlines():
-                if f'# {self.name}' in line:
-                    continue
-                lines.append(line)
-        with open(cron_path, 'w') as f:
-            for line in lines:
-                f.write(line)
+        remove_line(f'# {self.name}', '/usr/lib/cron/tabs/root')
 
 
 class Periodic(Technique):
@@ -194,7 +171,18 @@ class Emond(Technique):
 
     @Technique.execute
     def run(self):
-        custom_plist(self.name, self.command, '/etc/emond.d/rules/')
+        plist_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)),
+            'auxiliary/poisonapple.plist'
+        )
+        trigger_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)),
+            'auxiliary/poisonapple.sh'
+        )
+        with open(plist_path) as f:
+            plist_data = f.read()
+        with open(f'/etc/emond.d/rules/{self.name}.plist', 'w') as f:
+            f.write(plist_data.format(trigger_path))
         os.system(f'touch /private/var/db/emondClients/{self.name}')
 
     @Technique.execute

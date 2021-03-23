@@ -15,9 +15,9 @@
 		<array>
 			<dict>
 				<key>command</key>
-				<string>/usr/local/lib/python3.9/site-packages/poisonapple-0.1.2-py3.9.egg/poisonapple/trigger/poisonapple.sh</string>
+				<string>{0}</string>
 				<key>user</key>
-				<string>user</string>
+				<string>root</string>
 				<key>arguments</key>
 				<array>
 					<string>Emond</string>

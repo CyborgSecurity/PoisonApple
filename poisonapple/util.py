@@ -4,7 +4,8 @@ import os
 import sys
 import crayons
 import launchd
-import plistlib
+
+from crontab import CronTab
 
 STATUS_MESSAGES = {
     'failure':          '[!] Failure! The persistence mechansim action failed',
@@ -22,7 +23,7 @@ STATUS_COLORS = {
 }
 
 
-def print_error(name, text=str(), stop=False):
+def print_status(name, text=str(), stop=False):
     message = STATUS_MESSAGES[name]
     if text:
         message += f': {text}'
@@ -31,17 +32,6 @@ def print_error(name, text=str(), stop=False):
             print(color(message))
     if stop:
         sys.exit(1)
-
-
-def custom_plist(label, program_arguments, path):
-    plist = dict(
-        Label=label,
-        ProgramArguments=program_arguments.split(),
-        RunAtLoad=True,
-        KeepAlive=True,
-    )
-    with open(os.path.join(path, label+'.plist'), 'wb') as f:
-        plistlib.dump(plist, f)
 
 
 def write_plist(label, program_arguments, scope):
@@ -70,3 +60,22 @@ def get_trigger_command(technique_name):
         'auxiliary/poisonapple.sh'
     )
     return f'{trigger} {technique_name}'
+
+
+def create_cron_job(user, command, comment):
+    cron = CronTab(user=user)
+    job = cron.new(command=command, comment=comment)
+    job.minute.every(1)
+    cron.write()
+
+
+def remove_line(string, file_path):
+    lines = list()
+    with open(file_path) as f:
+        for line in f.readlines():
+            if string in line:
+                continue
+            lines.append(line)
+    with open(file_path, 'w') as f:
+        for line in lines:
+            f.write(line)
