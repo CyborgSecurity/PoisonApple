@@ -14,6 +14,7 @@ STATUS_MESSAGES = {
     'missing_command':  '[-] Error! Need to specifiy either --command <COMMAND> OR --popup',
     'missing_option':   '[-] Error! Missing required option, see --help for more info...',
     'success':          '[+] Success! The persistence mechanism action was successful',
+    'warning':          '[~] Warning',
 }
 
 STATUS_COLORS = {

@@ -251,6 +251,8 @@ class Reopen(Technique):
 
     @Technique.execute
     def run(self):
+        if not self.command.lower().endswith('.app'):
+            print_status('warning', text='Reopen command should end with .app in order to function properly!')
         for path in self.get_plist_paths():
             plist_data = get_plist(path)
             plist_data['TALAppsToRelaunchAtLogin'].append(
