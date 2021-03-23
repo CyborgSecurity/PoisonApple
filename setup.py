@@ -16,7 +16,7 @@ setup(
     package_data={
         'poisonapple.auxiliary': ['*.plist', '*.sh']
     },
-    version='0.1.2',
+    version='0.2.0',
     description='Command-line tool to perform various persistence mechanism techniques on macOS.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -35,7 +35,7 @@ setup(
         'python-crontab',
     ],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',

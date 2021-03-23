@@ -184,7 +184,6 @@ class AtJob(Technique):
     def run(self):
         os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
         os.system('launchctl load -w /System/Library/LaunchDaemons/com.apple.atrun.plist')
-        # TODO: recurisve at command here?
         os.system(f'{self.command} | at +1 minute')
 
     @Technique.execute
