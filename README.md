@@ -15,7 +15,7 @@ Note: PoisonApple was written & tested using Python 3.9, it should work using Py
 
 ## Usage
 
-See PoisonApple switch options with **--help**:
+See PoisonApple switch options (--help):
 ```
 $ poisonapple --help
 usage: poisonapple [-h] [-l] [-t TECHNIQUE] [-n NAME] [-c COMMAND] [-r]
