@@ -137,9 +137,35 @@ class LoginHook(Technique):
         os.system('defaults delete com.apple.loginwindow LoginHook')
 
 
+class LoginHookUser(Technique):
+    def __init__(self, name, command):
+        super().__init__('LoginHookUser', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        os.system(f'defaults write com.apple.loginwindow LoginHook "{self.command}"')
+
+    @Technique.execute
+    def remove(self):
+        os.system('defaults delete com.apple.loginwindow LoginHook')
+
+
 class LogoutHook(Technique):
     def __init__(self, name, command):
         super().__init__('LogoutHook', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+        os.system(f'defaults write com.apple.loginwindow LogoutHook "{self.command}"')
+
+    @Technique.execute
+    def remove(self):
+        os.system('defaults delete com.apple.loginwindow LogoutHook')
+
+
+class LogoutHookUser(Technique):
+    def __init__(self, name, command):
+        super().__init__('LogoutHookUser', name, command, root_required=False)
 
     @Technique.execute
     def run(self):
@@ -222,7 +248,9 @@ technique_list = [
     LaunchAgentUser,
     LaunchDaemon,
     LoginHook,
+    LoginHookUser,
     LogoutHook,
+    LogoutHookUser,
     Periodic,
     Zshrc,
 ]
