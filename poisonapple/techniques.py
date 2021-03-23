@@ -242,14 +242,16 @@ class Reopen(Technique):
     def __init__(self, name, command):
         super().__init__('Reopen', name, command, root_required=False)
 
-    @Technique.execute
-    def run(self):
+    def get_plist_paths(self):
         reopen_path = f'/Users/{os.getlogin()}/Library/Preferences/ByHost/'
         plist_paths = [os.path.join(reopen_path, f) for f in os.listdir(reopen_path) if f.startswith('com.apple.loginwindow')]
         if not plist_paths:
             raise Exception('Reopen plist file not found!')
+        return plist_paths
 
-        for path in plist_paths:
+    @Technique.execute
+    def run(self):
+        for path in self.get_plist_paths():
             plist_data = get_plist(path)
             plist_data['TALAppsToRelaunchAtLogin'].append(
                 {
@@ -263,7 +265,12 @@ class Reopen(Technique):
 
     @Technique.execute
     def remove(self):
-        pass
+        for path in self.get_plist_paths():
+            plist_data = get_plist(path)
+            for reopen_dict in plist_data['TALAppsToRelaunchAtLogin']:
+                if reopen_dict['BundleID'] == self.name:
+                    plist_data['TALAppsToRelaunchAtLogin'].remove(reopen_dict)
+            write_plist(path, plist_data)
 
 
 technique_list = [
