@@ -179,16 +179,17 @@ class LogoutHookUser(Technique):
 class AtJob(Technique):
     def __init__(self, name, command):
         super().__init__('AtJob', name, command, root_required=True)
+        self.atrun_plist = '/System/Library/LaunchDaemons/com.apple.atrun.plist'
 
     @Technique.execute
     def run(self):
-        os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
-        os.system('launchctl load -w /System/Library/LaunchDaemons/com.apple.atrun.plist')
+        os.system(f'launchctl unload -F {self.atrun_plist}')
+        os.system(f'launchctl load -w {self.atrun_plist}')
         os.system(f'{self.command} | at +1 minute')
 
     @Technique.execute
     def remove(self):
-        os.system('launchctl unload -F /System/Library/LaunchDaemons/com.apple.atrun.plist')
+        os.system(f'launchctl unload -F {self.atrun_plist}')
 
 
 class Emond(Technique):
@@ -214,27 +215,29 @@ class Emond(Technique):
 class Zshrc(Technique):
     def __init__(self, name, command):
         super().__init__('Zshrc', name, command, root_required=False)
+        self.zshrc_path = f'/Users/{os.getlogin()}/.zshrc'
 
     @Technique.execute
     def run(self):
-        os.system(f'echo "{self.command} # {self.name}" >> /Users/{os.getlogin()}/.zshrc')
+        os.system(f'echo "{self.command} # {self.name}" >> {self.zshrc_path}')
 
     @Technique.execute
     def remove(self):
-        remove_line(f'# {self.name}', f'/Users/{os.getlogin()}/.zshrc')
+        remove_line(f'# {self.name}', self.zshrc_path)
 
 
 class Bashrc(Technique):
     def __init__(self, name, command):
         super().__init__('Bashrc', name, command, root_required=False)
+        self.bashrc_path = f'/Users/{os.getlogin()}/.bashrc'
 
     @Technique.execute
     def run(self):
-        os.system(f'echo "{self.command} # {self.name}" >> /Users/{os.getlogin()}/.bashrc')
+        os.system(f'echo "{self.command} # {self.name}" >> {self.bashrc_path}')
 
     @Technique.execute
     def remove(self):
-        remove_line(f'# {self.name}', f'/Users/{os.getlogin()}/.bashrc')
+        remove_line(f'# {self.name}', self.bashrc_path)
 
 
 class Reopen(Technique):
