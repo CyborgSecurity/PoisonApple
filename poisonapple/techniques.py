@@ -277,6 +277,34 @@ class Reopen(Technique):
             write_plist(path, plist_data)
 
 
+class LoginItem(Technique):
+    def __init__(self, name, command):
+        super().__init__('LoginItem', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        auxiliary_path = get_full_path('auxiliary/')
+        app_path = os.path.join(auxiliary_path, f'{self.name}.app')
+        app_path_full = os.path.join(app_path, 'Contents/MacOS')
+        try:
+            os.makedirs(app_path_full)
+        except FileExistsError:
+            pass
+        with open(get_full_path('auxiliary/poisonapple.sh')) as f:
+            script_data = f.read().replace('$1', 'LoginItem')
+        app_path_script = os.path.join(app_path_full, self.name)
+        with open(app_path_script, 'w') as f:
+            f.write(script_data)
+        os.chmod(app_path_script, 0o755)
+        login_items_add_path = get_full_path('auxiliary/login-items-add.sh')
+        os.system(f'{login_items_add_path} {app_path}')
+
+    @Technique.execute
+    def remove(self):
+        login_items_rm_path = get_full_path('auxiliary/login-items-rm.sh')
+        os.system(f'{login_items_rm_path} {self.name}')
+
+
 technique_list = [
     AtJob,
     Bashrc,
@@ -288,6 +316,7 @@ technique_list = [
     LaunchDaemon,
     LoginHook,
     LoginHookUser,
+    LoginItem,
     LogoutHook,
     LogoutHookUser,
     Periodic,
