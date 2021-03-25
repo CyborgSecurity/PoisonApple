@@ -2,4 +2,3 @@
 *.egg-info/
 dist/
 build/
-reinstall.sh
