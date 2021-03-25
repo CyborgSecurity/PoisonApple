@@ -39,7 +39,7 @@ optional arguments:
   -r, --remove          remove persistence mechanism
 ```
 
-List of avaiable techniques:
+List of available techniques:
 ```
 $ poisonapple --list
       ,       _______       __
