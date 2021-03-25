@@ -115,9 +115,9 @@ class Periodic(Technique):
     @Technique.execute
     def run(self):
         periodic_path = f'/etc/periodic/daily/666.{self.name}'
-        os.system(f'echo "#!/bin/sh" > {periodic_path}')
-        os.system(f'echo {self.command} >> {periodic_path}')
-        os.system(f'chmod 755 {periodic_path}')
+        with open(periodic_path, 'w') as f:
+            f.write(f'#!/usr/bin/env bash\n{self.command}')
+        os.chmod(periodic_path, 0o755)
 
     @Technique.execute
     def remove(self):
@@ -253,7 +253,7 @@ class Reopen(Technique):
 
     @Technique.execute
     def run(self):
-        app_path = create_app(self.name, 'Reopen', command=self.command)
+        app_path = create_app(self.name, self.command, 'Reopen')
         for path in self.get_plist_paths():
             plist_data = get_plist(path)
             plist_data['TALAppsToRelaunchAtLogin'].append(
@@ -282,7 +282,7 @@ class LoginItem(Technique):
 
     @Technique.execute
     def run(self):
-        app_path = create_app(self.name, 'LoginItem', command=self.command)
+        app_path = create_app(self.name, self.command, 'LoginItem')
         login_items_add_path = get_full_path('auxiliary/login-items-add.sh')
         os.system(f'{login_items_add_path} {app_path}')
 
