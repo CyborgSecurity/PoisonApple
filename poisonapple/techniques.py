@@ -253,6 +253,7 @@ class Reopen(Technique):
 
     @Technique.execute
     def run(self):
+        print_status('warning', 'This technique is finicky and might not work as expected, YMMV.')
         app_path = create_app(self.name, self.command, 'Reopen')
         for path in self.get_plist_paths():
             plist_data = get_plist(path)
