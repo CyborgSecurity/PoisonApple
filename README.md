@@ -8,10 +8,16 @@ Command-line tool to perform various persistence mechanism techniques on macOS. 
 
 Do it up:
 ```
-$ pip install poisonapple --user
+$ pip3 install poisonapple --user
 ```
 
 Note: PoisonApple was written & tested using Python 3.9, it should work using Python 3.6+
+
+## Important Notes!
+
+* PoisonApple will make modifications to your macOS system, it's advised to only use PoisonApple on a virtual machine. Although any persistence mechanism technique added using this tool can also be easily removed (-r), **please use with caution**!
+* Be advised: This tool will likely cause common AV / EDR / other macOS security products to generate alerts.
+* To understand how any of these techniques work in-depth please see [The Art of Mac Malware, Volume 1: Analysis - Chapter 0x2: Persistence](https://taomm.org/PDFs/vol1/CH%200x02%20Persistence.pdf) by Patrick Wardle of Objective-See. It's a really fantastic resource.
 
 ## Usage
 
@@ -69,6 +75,8 @@ $ poisonapple --list
 +--------------------+
 | LoginHookUser      |
 +--------------------+
+| LoginItem          |
++--------------------+
 | LogoutHook         |
 +--------------------+
 | LogoutHookUser     |
@@ -114,14 +122,14 @@ Triggered @ Tue Mar 23 17:48:05 CDT 2021
 Triggered @ Tue Mar 23 17:48:15 CDT 2021
 ```
 
-Use a custom command:
-```
-$ poisonapple -t Cron -n foo -c "echo foo >> /Users/user/Desktop/foo"
-...
-```
-
 Remove a persistence mechanism:
 ```
 $ poisonapple -t LaunchAgentUser -n testing -r
+...
+```
+
+Use a custom command:
+```
+$ poisonapple -t LaunchAgentUser -n foo -c "echo foo >> /Users/user/Desktop/foo"
 ...
 ```
