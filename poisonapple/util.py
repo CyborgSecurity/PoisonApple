@@ -94,3 +94,23 @@ def remove_line(string, file_path):
     with open(file_path, 'w') as f:
         for line in lines:
             f.write(line)
+
+
+def create_app(name, technique_name, command=None):
+    auxiliary_path = get_full_path('auxiliary/')
+    app_path = os.path.join(auxiliary_path, f'{name}.app')
+    app_path_full = os.path.join(app_path, 'Contents/MacOS')
+    try:
+        os.makedirs(app_path_full)
+    except FileExistsError:
+        pass
+    with open(get_full_path('auxiliary/poisonapple.sh')) as f:
+        script_data = f.read().replace('$1', technique_name)
+    app_path_script = os.path.join(app_path_full, name)
+    with open(app_path_script, 'w') as f:
+        if not command:
+            f.write(script_data)
+        else:
+            f.write(f'#!/usr/bin/env bash\n{command}')
+    os.chmod(app_path_script, 0o755)
+    return app_path
