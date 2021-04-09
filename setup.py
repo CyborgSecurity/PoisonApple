@@ -16,7 +16,7 @@ setup(
     package_data={
         'poisonapple.auxiliary': ['*.plist', '*.sh']
     },
-    version='0.2.0',
+    version='0.2.1',
     description='Command-line tool to perform various persistence mechanism techniques on macOS.',
     long_description=long_description,
     long_description_content_type='text/markdown',

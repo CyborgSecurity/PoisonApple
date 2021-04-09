@@ -39,6 +39,82 @@ class Technique:
         return wrapper
 
 
+class AtJob(Technique):
+    def __init__(self, name, command):
+        super().__init__('AtJob', name, command, root_required=True)
+        self.atrun_plist = '/System/Library/LaunchDaemons/com.apple.atrun.plist'
+
+    @Technique.execute
+    def run(self):
+        os.system(f'launchctl unload -F {self.atrun_plist}')
+        os.system(f'launchctl load -w {self.atrun_plist}')
+        os.system(f'{self.command} | at +1 minute')
+
+    @Technique.execute
+    def remove(self):
+        os.system(f'launchctl unload -F {self.atrun_plist}')
+
+
+class Bashrc(Technique):
+    def __init__(self, name, command):
+        super().__init__('Bashrc', name, command, root_required=False)
+        self.bashrc_path = f'/Users/{os.getlogin()}/.bashrc'
+
+    @Technique.execute
+    def run(self):
+        os.system(f'echo "{self.command} # {self.name}" >> {self.bashrc_path}')
+
+    @Technique.execute
+    def remove(self):
+        remove_line(f'# {self.name}', self.bashrc_path)
+
+
+class Cron(Technique):
+    def __init__(self, name, command):
+        super().__init__('Cron', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        create_cron_job(os.getlogin(), self.command, self.name)
+
+    @Technique.execute
+    def remove(self):
+        remove_line(f'# {self.name}', os.path.join('/usr/lib/cron/tabs/', os.getlogin()))
+
+
+class CronRoot(Technique):
+    def __init__(self, name, command):
+        super().__init__('CronRoot', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+        create_cron_job('root', self.command, self.name)
+
+    @Technique.execute
+    def remove(self):
+        remove_line(f'# {self.name}', '/usr/lib/cron/tabs/root')
+
+
+class Emond(Technique):
+    def __init__(self, name, command):
+        super().__init__('Emond', name, command, root_required=True)
+
+    @Technique.execute
+    def run(self):
+        plist_path = get_full_path('auxiliary/poisonapple.plist')
+        trigger_path = get_full_path('auxiliary/poisonapple.sh')
+        with open(plist_path) as f:
+            plist_data = f.read()
+        with open(f'/etc/emond.d/rules/{self.name}.plist', 'w') as f:
+            f.write(plist_data.format(trigger_path))
+        os.system(f'touch /private/var/db/emondClients/{self.name}')
+
+    @Technique.execute
+    def remove(self):
+        os.remove(f'/etc/emond.d/rules/{self.name}.plist')
+        os.remove(f'/private/var/db/emondClients/{self.name}')
+
+
 class LaunchAgent(Technique):
     def __init__(self, name, command):
         super().__init__('LaunchAgent', name, command, root_required=True)
@@ -82,48 +158,6 @@ class LaunchDaemon(Technique):
         plist_launch_uninstall(self.name, 3)
 
 
-class Cron(Technique):
-    def __init__(self, name, command):
-        super().__init__('Cron', name, command, root_required=False)
-
-    @Technique.execute
-    def run(self):
-        create_cron_job(os.getlogin(), self.command, self.name)
-
-    @Technique.execute
-    def remove(self):
-        remove_line(f'# {self.name}', os.path.join('/usr/lib/cron/tabs/', os.getlogin()))
-
-
-class CronRoot(Technique):
-    def __init__(self, name, command):
-        super().__init__('CronRoot', name, command, root_required=True)
-
-    @Technique.execute
-    def run(self):
-        create_cron_job('root', self.command, self.name)
-
-    @Technique.execute
-    def remove(self):
-        remove_line(f'# {self.name}', '/usr/lib/cron/tabs/root')
-
-
-class Periodic(Technique):
-    def __init__(self, name, command):
-        super().__init__('Periodic', name, command, root_required=True)
-
-    @Technique.execute
-    def run(self):
-        periodic_path = f'/etc/periodic/daily/666.{self.name}'
-        with open(periodic_path, 'w') as f:
-            f.write(f'#!/usr/bin/env bash\n{self.command}')
-        os.chmod(periodic_path, 0o755)
-
-    @Technique.execute
-    def remove(self):
-        os.remove(f'/etc/periodic/daily/666.{self.name}')
-
-
 class LoginHook(Technique):
     def __init__(self, name, command):
         super().__init__('LoginHook', name, command, root_required=True)
@@ -148,6 +182,22 @@ class LoginHookUser(Technique):
     @Technique.execute
     def remove(self):
         os.system('defaults delete com.apple.loginwindow LoginHook')
+
+
+class LoginItem(Technique):
+    def __init__(self, name, command):
+        super().__init__('LoginItem', name, command, root_required=False)
+
+    @Technique.execute
+    def run(self):
+        app_path = create_app(self.name, self.command, 'LoginItem')
+        login_items_add_path = get_full_path('auxiliary/login-items-add.sh')
+        os.system(f'{login_items_add_path} {app_path}')
+
+    @Technique.execute
+    def remove(self):
+        login_items_rm_path = get_full_path('auxiliary/login-items-rm.sh')
+        os.system(f'{login_items_rm_path} {self.name}')
 
 
 class LogoutHook(Technique):
@@ -176,68 +226,20 @@ class LogoutHookUser(Technique):
         os.system('defaults delete com.apple.loginwindow LogoutHook')
 
 
-class AtJob(Technique):
+class Periodic(Technique):
     def __init__(self, name, command):
-        super().__init__('AtJob', name, command, root_required=True)
-        self.atrun_plist = '/System/Library/LaunchDaemons/com.apple.atrun.plist'
+        super().__init__('Periodic', name, command, root_required=True)
 
     @Technique.execute
     def run(self):
-        os.system(f'launchctl unload -F {self.atrun_plist}')
-        os.system(f'launchctl load -w {self.atrun_plist}')
-        os.system(f'{self.command} | at +1 minute')
+        periodic_path = f'/etc/periodic/daily/666.{self.name}'
+        with open(periodic_path, 'w') as f:
+            f.write(f'#!/usr/bin/env bash\n{self.command}')
+        os.chmod(periodic_path, 0o755)
 
     @Technique.execute
     def remove(self):
-        os.system(f'launchctl unload -F {self.atrun_plist}')
-
-
-class Emond(Technique):
-    def __init__(self, name, command):
-        super().__init__('Emond', name, command, root_required=True)
-
-    @Technique.execute
-    def run(self):
-        plist_path = get_full_path('auxiliary/poisonapple.plist')
-        trigger_path = get_full_path('auxiliary/poisonapple.sh')
-        with open(plist_path) as f:
-            plist_data = f.read()
-        with open(f'/etc/emond.d/rules/{self.name}.plist', 'w') as f:
-            f.write(plist_data.format(trigger_path))
-        os.system(f'touch /private/var/db/emondClients/{self.name}')
-
-    @Technique.execute
-    def remove(self):
-        os.remove(f'/etc/emond.d/rules/{self.name}.plist')
-        os.remove(f'/private/var/db/emondClients/{self.name}')
-
-
-class Zshrc(Technique):
-    def __init__(self, name, command):
-        super().__init__('Zshrc', name, command, root_required=False)
-        self.zshrc_path = f'/Users/{os.getlogin()}/.zshrc'
-
-    @Technique.execute
-    def run(self):
-        os.system(f'echo "{self.command} # {self.name}" >> {self.zshrc_path}')
-
-    @Technique.execute
-    def remove(self):
-        remove_line(f'# {self.name}', self.zshrc_path)
-
-
-class Bashrc(Technique):
-    def __init__(self, name, command):
-        super().__init__('Bashrc', name, command, root_required=False)
-        self.bashrc_path = f'/Users/{os.getlogin()}/.bashrc'
-
-    @Technique.execute
-    def run(self):
-        os.system(f'echo "{self.command} # {self.name}" >> {self.bashrc_path}')
-
-    @Technique.execute
-    def remove(self):
-        remove_line(f'# {self.name}', self.bashrc_path)
+        os.remove(f'/etc/periodic/daily/666.{self.name}')
 
 
 class Reopen(Technique):
@@ -277,37 +279,15 @@ class Reopen(Technique):
             write_plist(path, plist_data)
 
 
-class LoginItem(Technique):
+class Zshrc(Technique):
     def __init__(self, name, command):
-        super().__init__('LoginItem', name, command, root_required=False)
+        super().__init__('Zshrc', name, command, root_required=False)
+        self.zshrc_path = f'/Users/{os.getlogin()}/.zshrc'
 
     @Technique.execute
     def run(self):
-        app_path = create_app(self.name, self.command, 'LoginItem')
-        login_items_add_path = get_full_path('auxiliary/login-items-add.sh')
-        os.system(f'{login_items_add_path} {app_path}')
+        os.system(f'echo "{self.command} # {self.name}" >> {self.zshrc_path}')
 
     @Technique.execute
     def remove(self):
-        login_items_rm_path = get_full_path('auxiliary/login-items-rm.sh')
-        os.system(f'{login_items_rm_path} {self.name}')
-
-
-technique_list = [
-    AtJob,
-    Bashrc,
-    Cron,
-    CronRoot,
-    Emond,
-    LaunchAgent,
-    LaunchAgentUser,
-    LaunchDaemon,
-    LoginHook,
-    LoginHookUser,
-    LoginItem,
-    LogoutHook,
-    LogoutHookUser,
-    Periodic,
-    Reopen,
-    Zshrc,
-]
+        remove_line(f'# {self.name}', self.zshrc_path)

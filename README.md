@@ -52,7 +52,7 @@ $ poisonapple --list
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.0
+                   `--- ---' v0.2.1
 
 +--------------------+
 | AtJob              |
@@ -102,7 +102,7 @@ $ poisonapple -t LaunchAgentUser -n testing
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.0
+                   `--- ---' v0.2.1
 
 [+] Success! The persistence mechanism action was successful: LaunchAgentUser
 ```

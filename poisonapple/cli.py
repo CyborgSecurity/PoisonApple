@@ -3,7 +3,7 @@
 import crayons
 import argparse
 
-from poisonapple.techniques import technique_list
+from poisonapple.techniques import Technique
 from poisonapple.util import get_trigger_command, print_status
 
 BANNER = '''\
@@ -56,7 +56,7 @@ def get_parser():
 def main():
     parser = get_parser()
     args = vars(parser.parse_args())
-
+    technique_list = Technique.__subclasses__()
     print(BANNER)
 
     if args['list']:
@@ -66,9 +66,9 @@ def main():
         print(seperator)
         return
 
-    name      = args['name']
-    remove    = args['remove']
-    command   = args['command']
+    name = args['name']
+    remove = args['remove']
+    command = args['command']
     technique = args['technique']
 
     if not (name and technique):
