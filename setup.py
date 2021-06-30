@@ -23,7 +23,7 @@ setup(
     license='MIT',
     url='https://github.com/CyborgSecurity/PoisonApple',
     author='Austin Jackson',
-    author_email='austin@cyborgsecurity.com',
+    author_email='vesche@protonmail.com',
     entry_points={
         'console_scripts': [
             'poisonapple = poisonapple.cli:main',
@@ -41,6 +41,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.9',
-        'Topic :: Security'
+        'Topic :: Security',
     ]
 )
