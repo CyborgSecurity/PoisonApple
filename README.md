@@ -52,7 +52,7 @@ $ poisonapple --list
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.1
+                   `--- ---' v0.2.2
 
 +--------------------+
 | AtJob              |
@@ -64,6 +64,8 @@ $ poisonapple --list
 | CronRoot           |
 +--------------------+
 | Emond              |
++--------------------+
+| Iterm2             |
 +--------------------+
 | LaunchAgent        |
 +--------------------+
@@ -102,7 +104,7 @@ $ poisonapple -t LaunchAgentUser -n testing
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.1
+                   `--- ---' v0.2.2
 
 [+] Success! The persistence mechanism action was successful: LaunchAgentUser
 ```
