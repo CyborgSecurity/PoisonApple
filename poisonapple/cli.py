@@ -1,12 +1,9 @@
-"""poisonapple.cli"""
-
-import crayons
 import argparse
 
 from poisonapple.techniques import Technique
 from poisonapple.util import get_trigger_command, print_status
 
-BANNER = '''\
+BANNER = """\
       ,       _______       __
   .-.:|.-.   |   _   .-----|__|-----.-----.-----.
 .'        '. |.  |   |  |  |  |__ --|  |  |  |  |
@@ -17,38 +14,46 @@ BANNER = '''\
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.2
-'''
+                   `--- ---' v0.2.3
+"""
 
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description='Command-line tool to perform various persistence mechanism techniques on macOS.'
+        description="Command-line tool to perform various persistence mechanism techniques on macOS."
     )
     parser.add_argument(
-        '-l', '--list',
-        action='store_true',
-        help='list available persistence mechanism techniques'
+        "-l",
+        "--list",
+        action="store_true",
+        help="list available persistence mechanism techniques",
     )
     parser.add_argument(
-        '-t', '--technique',
-        default=str(), type=str,
-        help='persistence mechanism technique to use'
+        "-t",
+        "--technique",
+        default=str(),
+        type=str,
+        help="persistence mechanism technique to use",
     )
     parser.add_argument(
-        '-n', '--name',
-        default=str(), type=str,
-        help='name for the file or label used for persistence'
+        "-n",
+        "--name",
+        default=str(),
+        type=str,
+        help="name for the file or label used for persistence",
     )
     parser.add_argument(
-        '-c', '--command',
-        default=str(), type=str,
-        help='command(s) to execute for persistence'
+        "-c",
+        "--command",
+        default=str(),
+        type=str,
+        help="command(s) to execute for persistence",
     )
     parser.add_argument(
-        '-r', '--remove',
-        action='store_true',
-        help='remove persistence mechanism'
+        "-r",
+        "--remove",
+        action="store_true",
+        help="remove persistence mechanism"
     )
     return parser
 
@@ -59,20 +64,20 @@ def main():
     technique_list = Technique.__subclasses__()
     print(BANNER)
 
-    if args['list']:
+    if args["list"]:
         seperator = f'+{"-"*20}+'
         for technique in technique_list:
-            print(f'{seperator}\n| {technique.__name__:<18} |')
+            print(f"{seperator}\n| {technique.__name__:<18} |")
         print(seperator)
         return
 
-    name = args['name']
-    remove = args['remove']
-    command = args['command']
-    technique = args['technique']
+    name = args["name"]
+    remove = args["remove"]
+    command = args["command"]
+    technique = args["technique"]
 
     if not (name and technique):
-        print_status('missing_option', stop=True)
+        print_status("missing_option", stop=True)
 
     for technique_class in technique_list:
         technique_name = technique_class.__name__
@@ -86,5 +91,5 @@ def main():
                 t.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

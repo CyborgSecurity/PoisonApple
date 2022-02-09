@@ -2,7 +2,7 @@
 
 <img src="https://i.imgur.com/Ty5esFJ.png" align="right">
 
-Command-line tool to perform various persistence mechanism techniques on macOS. This tool was designed to be used by threat hunters for cyber threat emulation purposes.
+This is a command-line tool to perform various persistence mechanism techniques on macOS. This tool was designed to be used by threat hunters for cyber threat emulation purposes.
 
 ## Install
 
@@ -52,7 +52,7 @@ $ poisonapple --list
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.2
+                   `--- ---' v0.2.3
 
 +--------------------+
 | AtJob              |
@@ -104,7 +104,7 @@ $ poisonapple -t LaunchAgentUser -n testing
 .-'"~"   '-.       |.  _   |   __|   __|__|_____|
 '.        .'       |:  |   |__|  |__|
   '-_.._-'         |::.|:. |
-                   `--- ---' v0.2.2
+                   `--- ---' v0.2.3
 
 [+] Success! The persistence mechanism action was successful: LaunchAgentUser
 ```
